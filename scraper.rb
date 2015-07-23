@@ -1,25 +1,22 @@
-# This is a template for a Ruby scraper on morph.io (https://morph.io)
-# including some code snippets below that you should find helpful
-
-# require 'scraperwiki'
-# require 'mechanize'
-#
-# agent = Mechanize.new
-#
-# # Read in a page
-# page = agent.get("http://foo.com")
-#
-# # Find somehing on the page using css selectors
-# p page.at('div.content')
-#
-# # Write out to the sqlite database using scraperwiki library
-# ScraperWiki.save_sqlite(["name"], {"name" => "susan", "occupation" => "software developer"})
-#
-# # An arbitrary query against the database
-# ScraperWiki.select("* from data where 'name'='peter'")
-
-# You don't have to do things with the Mechanize or ScraperWiki libraries.
-# You can use whatever gems you want: https://morph.io/documentation/ruby
-# All that matters is that your final data is written to an SQLite database
-# called "data.sqlite" in the current working directory which has at least a table
-# called "data".
+diff --git a/scraper.rb b/scraper.rb
+index 2d2baaa..f8b14d6 100644
+--- a/scraper.rb
++++ b/scraper.rb
+@@ -1,6 +1,8 @@
+ require 'mechanize'
+ require 'date'
+-require 'json'
++require 'scraperwiki'
++
++ScraperWiki.config = { db: 'data.sqlite', default_table_name: 'data' }
+ 
+ agent = Mechanize.new
+ page = agent.get("http://pitchfork.com/reviews/albums/")
+@@ -34,4 +36,6 @@ reviews = review_links.map do |link|
+   }
+ end
+ 
+-puts JSON.pretty_generate(reviews)
++reviews.each do |review|
++  ScraperWiki.save_sqlite([:artist, :album], review)
++end
